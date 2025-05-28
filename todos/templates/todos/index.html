@@ -1,0 +1,70 @@
+{% extends 'todos/base.html' %}
+
+{% block title %}
+  <title>Todo List</title>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <!-- Title -->
+  <div class="row">
+    <div class="offset-md-2 col-lg-9">
+      <div class="page-header text-center">
+        <h1>📝 My Todo List</h1>
+        <p class="text-muted">Stay organized and productive</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add todo form -->
+  <div class="row">
+    <div class="offset-md-2 col-lg-9">
+      <form method="post" action="{% url 'todos:add' %}">
+        {% csrf_token %}
+        <div class="form-row align-items-center">
+          <div class="col-md-8">
+            <input type="text" class="form-control" name="title" placeholder="e.g., Learn Docker" required>
+          </div>
+          <div class="col-md-4">
+            <button type="submit" name="submit" class="btn btn-outline-primary btn-block">
+              Add Task
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Todo List -->
+  <div class="row">
+    <div class="offset-md-2 col-lg-9">
+      <div class="todo-list-container mt-4">
+        {% if todo_list %}
+          <div class="list-group">
+            {% for todo in todo_list %}
+            <div class="list-group-item {% if todo.isCompleted %} todo-complete {% endif %}">
+              <div style="display: flex; align-items: center; width: 100%;">
+                <form method="post" action="{% url 'todos:update' todo.id %}" style="margin-right: 10px;">
+                  {% csrf_token %}
+                  <input type="checkbox" name="isCompleted" onchange="this.form.submit()" {% if todo.isCompleted %}checked{% endif %} class="todo-status-checkbox" title="{% if not todo.isCompleted %} Mark as done {% else %} Mark as not done {% endif %}">
+                </form>
+                <div style="flex: 1;">
+                  {{ todo.title }}
+                </div>
+                <a href="{% url 'todos:delete' todo.id %}" title="Delete Task">
+                  <i class="far fa-trash-alt"></i>
+                </a>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-center text-muted">No tasks added yet. Add one above!</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
